@@ -1,0 +1,16 @@
+{
+  "short_name": "B&W Attendance",
+  "name": "B&W Attendance Tracker",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#051424",
+  "background_color": "#051424"
+}

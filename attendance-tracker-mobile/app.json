@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "BW Attendance Tracker",
+    "slug": "bw-attendance-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#051424"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.bwservices.attendance",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Camera is used to photograph completed work as proof of attendance.",
+        "NSPhotoLibraryUsageDescription": "Photo library access is used to attach proof photos.",
+        "NSPhotoLibraryAddUsageDescription": "Saving attendance proof photos."
+      }
+    },
+    "android": {
+      "package": "com.bwservices.attendance",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow BW Attendance Tracker to access your photos.",
+          "cameraPermission": "Allow BW Attendance Tracker to use your camera."
+        }
+      ],
+      "expo-sharing",
+      "@react-native-community/datetimepicker"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0a59ee5b-64b5-4e1c-ba43-830c0a365236"
+      }
+    },
+    "owner": "sanjuexploreain"
+  }
+}

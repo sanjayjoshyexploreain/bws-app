@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Backgrounds */
+  --bg-primary: #051424;
+  --bg-secondary: #0d1c2d;
+  --bg-surface: rgba(255, 255, 255, 0.06);
+  --bg-surface-hover: rgba(255, 255, 255, 0.10);
+  --bg-card: rgba(255, 255, 255, 0.07);
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.10);
+  --border-active: rgba(255, 255, 255, 0.25);
+
+  /* Brand */
+  --color-primary: #2563eb;
+  --color-primary-glow: rgba(37, 99, 235, 0.35);
+  --color-primary-dark: #1d4ed8;
+
+  /* Status */
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.15);
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-danger: #ef4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.15);
+
+  /* Typography */
+  --color-text: #f1f5f9;
+  --color-text-muted: #64748b;
+  --color-text-secondary: #94a3b8;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Shadows */
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.2);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-button: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at top, #0d1c2d 0%, #051424 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: var(--color-text);
+  font-family: 'Manrope', sans-serif;
+}
+
+#root {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
