@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
-  ScrollView, ActivityIndicator, Alert
+  ScrollView, ActivityIndicator, Alert, StatusBar, Platform
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { Api } from '../api/api';
 
@@ -91,6 +92,7 @@ function SectionCard({ emoji, title, isComplete, isExpanded, onToggle, children 
 
 export default function WorkwearRequestScreen({ navigation }) {
   const { state } = useAuth();
+  const insets = useSafeAreaInsets();
 
   const [shoes, setShoes] = useState({ type: null, size: null });
   const [helmet, setHelmet] = useState({ type: null, subtype: null });
@@ -169,12 +171,16 @@ export default function WorkwearRequestScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Work Wear Request</Text>
-        <View style={{ width: 60 }} />
+      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : insets.top + 16 }]}>
+        <View style={styles.headerLeft}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Text style={styles.backText}>← Back</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle} numberOfLines={1} adjustsFontSizeToFit>Work Wear Request</Text>
+        </View>
+        <View style={styles.headerRight} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -310,14 +316,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    backgroundColor: 'rgba(5, 20, 36, 0.85)',
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    backgroundColor: 'rgba(5,20,36,0.85)',
   },
-  backBtn: { width: 60 },
-  backText: { color: COLORS.textSecondary, fontSize: 15, fontWeight: '600' },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.text },
+  headerLeft: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  headerTitleContainer: {
+    flex: 4,
+    alignItems: 'center',
+  },
+  headerRight: {
+    flex: 1,
+  },
+  backBtn: { 
+    paddingVertical: 4,
+  },
+  backText: { color: COLORS.primary, fontSize: 16, fontWeight: '600' },
+  headerTitle: { 
+    fontSize: 21, 
+    fontWeight: 'bold', 
+    color: COLORS.text, 
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
   scrollContent: { padding: 16, paddingBottom: 40 },
   infoBanner: {
     backgroundColor: COLORS.primaryDim,

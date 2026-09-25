@@ -30,36 +30,37 @@ export default function WorkerDashboard({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.card}>
-          <View style={styles.section}>
-            <Text style={styles.label}>EMPLOYEE NAME</Text>
-            <Text style={styles.nameText}>{state.employeeName || '—'}</Text>
+          <View style={styles.cardHeader}>
+            <View style={styles.headerInfo}>
+              <Text style={styles.nameText}>{state.employeeName || 'Unknown Worker'}</Text>
+              <Text style={styles.idBadge}>ID: {state.employeeId || '—'}</Text>
+            </View>
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>EMPLOYEE ID</Text>
-            <Text style={styles.valueText}>{state.employeeId || '—'}</Text>
+          <View style={styles.divider} />
+
+          <View style={styles.detailsList}>
+            {!!state.companyName && (
+              <View style={styles.listItem}>
+                <Text style={styles.label}>Company</Text>
+                <Text style={styles.valueText}>{state.companyName}</Text>
+              </View>
+            )}
+
+            {!!state.clientCompany && (
+              <View style={styles.listItem}>
+                <Text style={styles.label}>Client Company</Text>
+                <Text style={styles.valueText}>{state.clientCompany}</Text>
+              </View>
+            )}
+
+            {!!state.profession && (
+              <View style={styles.listItem}>
+                <Text style={styles.label}>Profession</Text>
+                <Text style={styles.valueText}>{state.profession}</Text>
+              </View>
+            )}
           </View>
-
-          {!!state.companyName && (
-            <View style={styles.section}>
-              <Text style={styles.label}>COMPANY</Text>
-              <Text style={styles.valueText}>{state.companyName}</Text>
-            </View>
-          )}
-
-          {!!state.clientCompany && (
-            <View style={styles.section}>
-              <Text style={styles.label}>CLIENT COMPANY</Text>
-              <Text style={styles.valueText}>{state.clientCompany}</Text>
-            </View>
-          )}
-
-          {!!state.profession && (
-            <View style={styles.sectionLast}>
-              <Text style={styles.label}>PROFESSION</Text>
-              <Text style={styles.valueText}>{state.profession}</Text>
-            </View>
-          )}
         </View>
       </ScrollView>
 
@@ -102,25 +103,52 @@ const styles = StyleSheet.create({
   logoutText: { color: '#ef4444', fontSize: 14, fontWeight: '600' },
   scrollContent: { padding: 16, paddingBottom: 160 },
   card: {
-    backgroundColor: COLORS.cardBg,
-    borderColor: COLORS.border,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(255,255,255,0.08)',
     borderWidth: 1,
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 24,
     marginBottom: 24,
   },
-  section: { marginBottom: 20 },
-  sectionLast: { marginBottom: 0 },
-  label: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 4,
   },
-  nameText: { fontSize: 20, fontWeight: '700', color: COLORS.text },
-  valueText: { fontSize: 16, color: COLORS.text },
+  headerInfo: { flex: 1 },
+  nameText: { fontSize: 22, fontWeight: '700', color: COLORS.text },
+  idBadge: {
+    marginTop: 8,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    fontWeight: '700',
+    overflow: 'hidden', // Ensures background color wraps corners properly on Android
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    marginVertical: 20,
+  },
+  detailsList: {
+    gap: 20,
+  },
+  listItem: {
+    width: '100%',
+  },
+  label: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: COLORS.textMuted,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  valueText: { fontSize: 15, color: COLORS.text, fontWeight: '500' },
   bottomContainer: {
     position: 'absolute',
     bottom: 40,

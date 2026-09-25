@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, StatusBar, Alert, KeyboardAvoidingView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../context/AuthContext';
 import { Api } from '../api/api';
@@ -91,6 +92,7 @@ const HoursPicker = ({ value, onChange }) => {
 
 export default function SubmitEntryScreen({ navigation }) {
   const { state } = useAuth();
+  const insets = useSafeAreaInsets();
   
   const today = warsawDateKey(new Date());
   
@@ -142,8 +144,13 @@ export default function SubmitEntryScreen({ navigation }) {
       };
       
       const res = await Api.submitEntry(payload);
-      const newEntryId = Number(res.entryId || res.id || res.ID || res.itemId);
-      setEntryId(newEntryId);
+      const newEntryId = res.entryId || res.id || res.ID || res.itemId || res.Id;
+      
+      if (!newEntryId) {
+        Alert.alert("Debug Info", "API didn't return an ID. Raw response: " + JSON.stringify(res));
+      }
+      
+      setEntryId(Number(newEntryId) || 0);
       setIsSubmitted(true);
       setSuccess(true);
     } catch (err) {
@@ -165,106 +172,119 @@ export default function SubmitEntryScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Submit Attendance</Text>
+      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : insets.top + 16 }]}>
+        <View style={styles.headerLeft}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle} numberOfLines={1} adjustsFontSizeToFit>Submit Attendance</Text>
+        </View>
+        <View style={styles.headerRight} />
       </View>
       
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {isSubmitted ? (
-          <View>
-            <View style={styles.successBanner}>
-              <Text style={styles.successText}>Entry saved successfully! Please attach photo proof.</Text>
-            </View>
-            
-            {entryId ? (
-              <PhotoUpload
-                entryId={entryId}
-                employeeId={state.employeeId}
-                dateKey={workDate}
-                onUploadDone={() => navigation.navigate('WorkerDashboard')}
-              />
-            ) : (
-              <View style={styles.placeholderBox}>
-                <Text style={styles.placeholderText}>Submit entry first, then upload photos</Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          {isSubmitted ? (
+            <View>
+              <View style={styles.successBanner}>
+                <Text style={styles.successText}>Entry saved successfully! Please attach photo proof.</Text>
               </View>
-            )}
-            
-            <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('WorkerDashboard')}>
-              <Text style={styles.skipButtonText}>Skip & go to dashboard</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View>
-            <Text style={styles.label}>WORK DATE</Text>
-            <TouchableOpacity 
-              style={[styles.input, focusInput === 'workDate' && styles.inputFocused]}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text style={{ color: COLORS.text, fontSize: 15 }}>{workDate}</Text>
-            </TouchableOpacity>
-            
-            {showDatePicker && (
-              <DateTimePicker
-                value={new Date(workDate)}
-                mode="date"
-                display="default"
-                maximumDate={new Date()}
-                minimumDate={minDateObj}
-                onChange={handleDateChange}
-              />
-            )}
-            
-            <HoursPicker 
-              value={hoursWorked} 
-              onChange={setHoursWorked} 
-            />
-            
-            <Text style={styles.label}>COMMENTS (OPTIONAL)</Text>
-            <TextInput
-              style={[styles.textArea, focusInput === 'comments' && styles.inputFocused]}
-              value={comments}
-              onChangeText={setComments}
-              onFocus={() => setFocusInput('comments')}
-              onBlur={() => setFocusInput(null)}
-              placeholder="Describe work completed today..."
-              placeholderTextColor={COLORS.textMuted}
-              multiline
-              numberOfLines={3}
-              editable={!isLoading}
-            />
-
-            {isDuplicate && (
-              <View style={styles.warningBanner}>
-                <Text style={styles.warningIcon}>⚠️</Text>
-                <View>
-                  <Text style={styles.warningTitle}>Entry already submitted</Text>
-                  <Text style={styles.warningText}>You already have an attendance entry for this date.</Text>
+              
+              {entryId ? (
+                <PhotoUpload
+                  entryId={entryId}
+                  employeeId={state.employeeId}
+                  dateKey={workDate}
+                  onUploadDone={() => navigation.navigate('WorkerDashboard')}
+                />
+              ) : (
+                <View style={styles.placeholderBox}>
+                  <Text style={styles.placeholderText}>Submit entry first, then upload photos</Text>
                 </View>
-              </View>
-            )}
+              )}
+              
+              <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('WorkerDashboard')}>
+                <Text style={styles.skipButtonText}>Skip & go to dashboard</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.label}>WORK DATE</Text>
+              <TouchableOpacity 
+                style={[styles.input, focusInput === 'workDate' && styles.inputFocused]}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <Text style={{ color: COLORS.text, fontSize: 15 }}>{workDate}</Text>
+              </TouchableOpacity>
+              
+              {showDatePicker && (
+                <DateTimePicker
+                  value={new Date(workDate)}
+                  mode="date"
+                  display="default"
+                  maximumDate={new Date()}
+                  minimumDate={minDateObj}
+                  onChange={handleDateChange}
+                />
+              )}
+              
+              <HoursPicker 
+                value={hoursWorked} 
+                onChange={setHoursWorked} 
+              />
+              
+              <Text style={styles.label}>COMMENTS (OPTIONAL)</Text>
+              <TextInput
+                style={[styles.textArea, focusInput === 'comments' && styles.inputFocused]}
+                value={comments}
+                onChangeText={setComments}
+                onFocus={() => setFocusInput('comments')}
+                onBlur={() => setFocusInput(null)}
+                placeholder="Describe work completed today..."
+                placeholderTextColor={COLORS.textMuted}
+                multiline
+                numberOfLines={3}
+                editable={!isLoading}
+              />
 
-            {!!error && (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            )}
-            
-            <TouchableOpacity
-              style={[styles.submitButton, (isLoading || isDuplicate) && styles.submitButtonDisabled]}
-              onPress={handleSubmit}
-              disabled={isLoading || isDuplicate}
-            >
-              <Text style={[styles.submitButtonText, isDuplicate && { color: COLORS.textMuted }]}>
-                {isLoading ? 'Submitting...' : isDuplicate ? 'Already Submitted Today' : 'Submit Attendance'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </ScrollView>
-      <PoweredBy />
+              {isDuplicate && (
+                <View style={styles.warningBanner}>
+                  <Text style={styles.warningIcon}>⚠️</Text>
+                  <View>
+                    <Text style={styles.warningTitle}>Entry already submitted</Text>
+                    <Text style={styles.warningText}>You already have an attendance entry for this date.</Text>
+                  </View>
+                </View>
+              )}
+
+              {!!error && (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              )}
+              
+              <TouchableOpacity
+                style={[styles.submitButton, (isLoading || isDuplicate) && styles.submitButtonDisabled]}
+                onPress={handleSubmit}
+                disabled={isLoading || isDuplicate}
+              >
+                <Text style={[styles.submitButtonText, isDuplicate && { color: COLORS.textMuted }]}>
+                  {isLoading ? 'Submitting...' : isDuplicate ? 'Already Submitted Today' : 'Submit Attendance'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </ScrollView>
+        <View style={{ paddingBottom: Platform.OS === 'android' ? 20 : insets.bottom, paddingTop: 10 }}>
+          <PoweredBy />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -274,14 +294,35 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
     backgroundColor: 'rgba(5, 20, 36, 0.85)',
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
-  backButton: { marginRight: 15, paddingVertical: 4 },
-  backButtonText: { color: COLORS.primary, fontSize: 15, fontWeight: '600' },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.text },
+  headerLeft: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  headerTitleContainer: {
+    flex: 4,
+    alignItems: 'center',
+  },
+  headerRight: {
+    flex: 1,
+  },
+  backButton: { 
+    paddingVertical: 4,
+  },
+  backButtonText: { color: COLORS.primary, fontSize: 16, fontWeight: '600' },
+  headerTitle: { 
+    fontSize: 21, 
+    fontWeight: 'bold', 
+    color: COLORS.text, 
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
   scrollContent: { padding: 16, paddingBottom: 40 },
   successBanner: {
     backgroundColor: 'rgba(16,185,129,0.2)',
