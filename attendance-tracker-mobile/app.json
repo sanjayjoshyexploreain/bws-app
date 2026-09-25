@@ -4,8 +4,11 @@
     "slug": "bw-attendance-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/app_icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
+      "image": "./assets/flash_screen.png",
+      "resizeMode": "contain",
       "backgroundColor": "#051424"
     },
     "ios": {
@@ -24,7 +27,11 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/app_icon.png",
+        "backgroundColor": "#ffffff"
+      }
     },
     "plugins": [
       [

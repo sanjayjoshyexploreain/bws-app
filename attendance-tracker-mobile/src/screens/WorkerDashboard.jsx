@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import PoweredBy from '../components/PoweredBy';
 
@@ -16,10 +17,11 @@ const COLORS = {
 
 export default function WorkerDashboard({ navigation }) {
   const { state, logout } = useAuth();
+  const insets = useSafeAreaInsets();
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : insets.top + 16 }]}>
         <Text style={styles.headerTitle}>Worker Dashboard</Text>
         <TouchableOpacity onPress={logout}>
           <Text style={styles.logoutText}>Logout</Text>
@@ -62,23 +64,25 @@ export default function WorkerDashboard({ navigation }) {
       </ScrollView>
 
       {/* Bottom action buttons */}
-      <View style={styles.bottomContainer}>
+      <View style={[styles.bottomContainer, { bottom: Platform.OS === 'android' ? 80 : insets.bottom + 60 }]}>
         <TouchableOpacity
           style={styles.submitButton}
           onPress={() => navigation.navigate('SubmitEntry')}
         >
-          <Text style={styles.submitButtonText}>+ Submit Attendance</Text>
+          <Text style={styles.submitButtonText} numberOfLines={1} adjustsFontSizeToFit>+ Submit Attendance</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.secondaryButton}
           onPress={() => navigation.navigate('WorkwearRequest')}
         >
-          <Text style={styles.secondaryButtonText}>🦺 Request Workwear</Text>
+          <Text style={styles.secondaryButtonText} numberOfLines={1} adjustsFontSizeToFit>🦺 Request Workwear</Text>
         </TouchableOpacity>
       </View>
 
-      <PoweredBy />
+      <View style={{ position: 'absolute', bottom: Platform.OS === 'android' ? 40 : Math.max(insets.bottom, 20), left: 0, right: 0 }}>
+        <PoweredBy />
+      </View>
     </SafeAreaView>
   );
 }
@@ -94,8 +98,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.text, letterSpacing: 0.5 },
-  logoutText: { color: COLORS.textMuted, fontSize: 13 },
+  headerTitle: { fontSize: 21, fontWeight: 'bold', color: COLORS.text, letterSpacing: 0.5 },
+  logoutText: { color: '#ef4444', fontSize: 14, fontWeight: '600' },
   scrollContent: { padding: 16, paddingBottom: 160 },
   card: {
     backgroundColor: COLORS.cardBg,
@@ -122,27 +126,29 @@ const styles = StyleSheet.create({
     bottom: 40,
     left: 16,
     right: 16,
-    gap: 10,
+    gap: 12,
   },
   submitButton: {
-    padding: 17,
+    height: 56,
     backgroundColor: COLORS.primary,
     borderRadius: 16,
     alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   submitButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   secondaryButton: {
-    padding: 14,
+    height: 56,
     backgroundColor: 'rgba(255,255,255,0.07)',
     borderRadius: 16,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: 'rgba(255,255,255,0.15)',
   },
   secondaryButtonText: { color: COLORS.text, fontSize: 15, fontWeight: '600' },
 });
