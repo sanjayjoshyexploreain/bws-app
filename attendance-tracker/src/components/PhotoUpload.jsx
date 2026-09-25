@@ -76,7 +76,7 @@ export default function PhotoUpload({ entryId, employeeId, dateKey, onUploadDone
           employeeId: state.employeeId,
           employeeName: state.employeeName || '',
           dateKey: dateKey,
-          fileName: photo.file.name,
+          fileName: photo.file.name.replace(/[#%*:<>?\/|"]/g, '_'),
           fileBase64: base64string,
           companyName: state.companyName || '',
           clientCompany: state.clientCompany || '',

@@ -65,7 +65,7 @@ export default function PhotoUpload({ entryId, employeeId, dateKey, onUploadDone
           entryId: Number(entryId),
           employeeId,
           dateKey,
-          fileName: photo.fileName,
+          fileName: photo.fileName.replace(/[#%*:<>?\/|"]/g, '_'),
           fileBase64: photo.base64
         });
         
