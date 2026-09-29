@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
@@ -42,10 +45,23 @@ function RootNavigator() {
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
+  const onReady = useCallback(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        SplashScreen.hideAsync().catch(() => {});
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => SplashScreen.hideAsync().catch(() => {}), 4000);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <NavigationContainer>
+        <NavigationContainer onReady={onReady}>
           <RootNavigator />
         </NavigationContainer>
       </AuthProvider>

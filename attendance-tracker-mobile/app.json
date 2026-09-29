@@ -4,13 +4,8 @@
     "slug": "bw-attendance-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app_icon.png",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/flash_screen.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#051424"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.bwservices.attendance",
@@ -29,11 +24,20 @@
         "android.permission.RECORD_AUDIO"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/app_icon.png",
         "backgroundColor": "#ffffff"
       }
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#051424",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 300,
+          "resizeMode": "contain"
+        }
+      ],
       [
         "expo-image-picker",
         {

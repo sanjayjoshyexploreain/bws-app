@@ -110,7 +110,6 @@ export default function PhotoUpload({ entryId, employeeId, dateKey, onUploadDone
           type="file" 
           accept="image/*" 
           capture="environment" 
-          multiple
           style={{ display: 'none' }} 
           ref={cameraInputRef} 
           onChange={(e) => handleFilesSelected(e.target.files)} 
