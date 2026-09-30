@@ -25,10 +25,11 @@ export default function WorkerDashboard() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'radial-gradient(ellipse at top, #0d1c2d, #051424)',
       paddingBottom: '292px',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      position: 'relative',
+      zIndex: 1
     }}>
       <header style={{
         background: 'rgba(5, 20, 36, 0.85)',
@@ -43,7 +44,7 @@ export default function WorkerDashboard() {
         top: 0,
         zIndex: 10
       }}>
-        <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--color-text)', letterSpacing: '0.01em' }}>
+        <div style={{ fontSize: '17px', fontWeight: '700', color: 'var(--color-primary)', letterSpacing: '0.01em' }}>
           Worker Dashboard
         </div>
         <button onClick={logout} style={{
@@ -55,7 +56,12 @@ export default function WorkerDashboard() {
         }}>Logout</button>
       </header>
 
-      <main style={{ flex: 1, padding: '24px 16px' }}>
+      <main style={{ flex: 1, padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <img 
+          src="/logo.svg" 
+          alt="BWS Logo" 
+          style={{ width: '280px', height: '140px', objectFit: 'contain', marginBottom: '20px' }} 
+        />
         <div style={{
           background: 'var(--bg-card)',
           backdropFilter: 'blur(10px)',
@@ -64,7 +70,9 @@ export default function WorkerDashboard() {
           borderRadius: 'var(--radius-xl)',
           padding: '24px',
           boxShadow: 'var(--shadow-card)',
-          marginBottom: '24px'
+          marginBottom: '24px',
+          width: '100%',
+          maxWidth: '448px'
         }}>
           <div style={{ marginBottom: '16px' }}>
             <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Employee Name</div>
@@ -110,12 +118,15 @@ export default function WorkerDashboard() {
           width: 'calc(100% - 32px)',
           maxWidth: '448px',
           padding: '13px',
-          background: '#1e293b',
-          border: '1px solid #334155',
-          color: 'var(--color-text)',
-          borderRadius: 'var(--radius-xl)',
+          background: 'rgba(14, 165, 233, 0.15)',
+          color: 'var(--color-primary)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          borderBottom: '2px solid var(--color-primary-dark)',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRight: '1px solid var(--color-primary-dark)',
+          borderRadius: '14px',
           fontSize: '14px',
-          fontWeight: '600',
+          fontWeight: '700',
           cursor: 'pointer',
           zIndex: 10
         }}
@@ -133,12 +144,15 @@ export default function WorkerDashboard() {
           width: 'calc(100% - 32px)',
           maxWidth: '448px',
           padding: '13px',
-          background: '#1e293b',
-          border: '1px solid #334155',
-          color: 'var(--color-text)',
-          borderRadius: 'var(--radius-xl)',
+          background: 'rgba(14, 165, 233, 0.15)',
+          color: 'var(--color-primary)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          borderBottom: '2px solid var(--color-primary-dark)',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRight: '1px solid var(--color-primary-dark)',
+          borderRadius: '14px',
           fontSize: '14px',
-          fontWeight: '600',
+          fontWeight: '700',
           cursor: 'pointer',
           zIndex: 10
         }}
@@ -158,10 +172,13 @@ export default function WorkerDashboard() {
           padding: '17px',
           background: 'var(--color-primary)',
           color: 'white',
-          border: 'none',
-          borderRadius: 'var(--radius-xl)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.4)',
+          borderBottom: '3px solid var(--color-primary-dark)',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRight: '1px solid var(--color-primary-dark)',
+          borderRadius: '14px',
           fontSize: '16px',
-          fontWeight: '700',
+          fontWeight: '800',
           cursor: 'pointer',
           boxShadow: 'var(--shadow-button)',
           zIndex: 10

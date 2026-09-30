@@ -1,29 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
-  ScrollView, ActivityIndicator, Alert, StatusBar, Platform
+  ScrollView, ActivityIndicator, Alert, StatusBar, Platform, Animated, Pressable
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { Api } from '../api/api';
 
 const COLORS = {
-  bg: '#051424',
-  surface: 'rgba(255,255,255,0.07)',
-  border: 'rgba(255,255,255,0.10)',
-  borderActive: 'rgba(37,99,235,0.5)',
-  text: '#f1f5f9',
+  bg: '#030b14',
+  surface: 'rgba(10, 25, 47, 0.65)',
+  border: 'rgba(255,255,255,0.08)',
+  borderActive: '#0ea5e9',
+  text: '#f8fafc',
   textMuted: '#64748b',
   textSecondary: '#94a3b8',
-  primary: '#2563eb',
-  primaryDim: 'rgba(37,99,235,0.08)',
-  primaryBorder: 'rgba(37,99,235,0.25)',
+  primary: '#0ea5e9',
+  primaryDark: '#0369a1',
+  primaryDim: 'rgba(14,165,233,0.15)',
+  primaryBorder: 'rgba(14,165,233,0.3)',
   success: '#10b981',
   successBg: 'rgba(16,185,129,0.1)',
   danger: '#ef4444',
   dangerBg: 'rgba(239,68,68,0.15)',
-  cardBg: 'rgba(255,255,255,0.07)',
+  cardBg: 'rgba(10, 25, 47, 0.65)',
 };
+
+const PulsingDot = ({ left, top, color, delay }) => {
+  const anim = useRef(new Animated.Value(0.3)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, { toValue: 1, duration: 1500, delay: delay, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0.3, duration: 1500, useNativeDriver: true }),
+      ])
+    ).start();
+  }, [anim, delay]);
+  return (
+    <Animated.View style={{
+      position: 'absolute', left, top, width: 5, height: 5, backgroundColor: color, borderRadius: 2.5,
+      opacity: anim, transform: [{ translateX: -2.5 }, { translateY: -2.5 }, { scale: anim }],
+      shadowColor: color, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 12, elevation: 6,
+    }} />
+  );
+};
+
+const TechnicalGrid = () => (
+  <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    {[...Array(8)].map((_, i) => (
+      <View key={`v-${i}`} style={{ position: 'absolute', left: `${(i + 1) * 12.5}%`, top: 0, bottom: 0, width: 1, backgroundColor: 'rgba(59,130,246,0.03)' }} />
+    ))}
+    {[...Array(12)].map((_, i) => (
+      <View key={`h-${i}`} style={{ position: 'absolute', top: `${(i + 1) * 8.33}%`, left: 0, right: 0, height: 1, backgroundColor: 'rgba(59,130,246,0.03)' }} />
+    ))}
+    <PulsingDot left="25%" top="16.66%" color="rgba(255,255,255,1)" delay={0} />
+    <PulsingDot left="62.5%" top="25%" color="#60a5fa" delay={800} />
+    <PulsingDot left="37.5%" top="50%" color="rgba(255,255,255,1)" delay={400} />
+    <PulsingDot left="75%" top="66.64%" color="#60a5fa" delay={1200} />
+    <PulsingDot left="12.5%" top="75%" color="#60a5fa" delay={600} />
+    <PulsingDot left="50%" top="83.33%" color="rgba(255,255,255,1)" delay={1000} />
+    <PulsingDot left="87.5%" top="41.65%" color="#60a5fa" delay={1500} />
+    <PulsingDot left="12.5%" top="8.33%" color="#60a5fa" delay={300} />
+    <PulsingDot left="87.5%" top="8.33%" color="#60a5fa" delay={1100} />
+    <PulsingDot left="50%" top="33.32%" color="#60a5fa" delay={700} />
+    <PulsingDot left="25%" top="58.31%" color="#60a5fa" delay={1300} />
+    <PulsingDot left="87.5%" top="91.63%" color="rgba(255,255,255,1)" delay={900} />
+    <PulsingDot left="12.5%" top="41.65%" color="#60a5fa" delay={500} />
+    <PulsingDot left="62.5%" top="75%" color="#60a5fa" delay={1400} />
+    <PulsingDot left="37.5%" top="16.66%" color="#60a5fa" delay={200} />
+  </View>
+);
 
 const CATALOG = {
   shoes: {
@@ -155,11 +201,14 @@ export default function WorkwearRequestScreen({ navigation }) {
 
   if (isSubmitted) {
     return (
-      <SafeAreaView style={[styles.safeArea, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={{ fontSize: 64, marginBottom: 16 }}>✅</Text>
-        <Text style={styles.successTitle}>Request Submitted!</Text>
-        <Text style={styles.successSubtitle}>Your workwear request has been recorded.</Text>
-      </SafeAreaView>
+      <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+        <TechnicalGrid />
+        <SafeAreaView style={[styles.safeArea, { justifyContent: 'center', alignItems: 'center' }]}>
+          <Text style={{ fontSize: 64, marginBottom: 16 }}>✅</Text>
+          <Text style={styles.successTitle}>Request Submitted!</Text>
+          <Text style={styles.successSubtitle}>Your workwear request has been recorded.</Text>
+        </SafeAreaView>
+      </View>
     );
   }
 
@@ -169,9 +218,11 @@ export default function WorkwearRequestScreen({ navigation }) {
   const othersComplete = others.length > 0;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : insets.top + 16 }]}>
+    <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+      <TechnicalGrid />
+      <SafeAreaView style={styles.safeArea}>
+        {/* Header */}
+        <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : insets.top + 16 }]}>
         <View style={styles.headerLeft}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Text style={styles.backText}>← Back</Text>
@@ -295,32 +346,44 @@ export default function WorkwearRequestScreen({ navigation }) {
         </SectionCard>
 
         {/* Submit */}
-        <TouchableOpacity
-          style={[styles.submitBtn, (!isValid() || isLoading) && styles.submitBtnDisabled]}
+        <Pressable
+          style={({ pressed }) => [
+            styles.submitBtn,
+            (!isValid() || isLoading) && styles.submitBtnDisabled,
+            pressed && isValid() && !isLoading && styles.submitBtnPressed,
+          ]}
           onPress={handleSubmit}
           disabled={!isValid() || isLoading}
         >
-          {isLoading
-            ? <ActivityIndicator color="#fff" />
-            : <Text style={styles.submitBtnText}>Submit Request</Text>
-          }
-        </TouchableOpacity>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={[
+              styles.submitBtnText, 
+              (!isValid() || isLoading) && styles.submitBtnTextDisabled
+            ]}>
+              Submit Request
+            </Text>
+          )}
+        </Pressable>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: COLORS.bg },
+  safeArea: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingVertical: 20,
-    backgroundColor: 'rgba(5, 20, 36, 0.85)',
+    backgroundColor: 'rgba(3, 11, 20, 0.85)',
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
+    zIndex: 10,
   },
   headerLeft: {
     flex: 1,
@@ -366,13 +429,18 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.cardBg,
     borderColor: COLORS.border,
     borderWidth: 1,
-    borderRadius: 14,
-    marginBottom: 12,
+    borderRadius: 22,
+    marginBottom: 16,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   sectionCardComplete: {
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
+    borderColor: COLORS.primaryDark,
+    borderWidth: 1,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -395,14 +463,14 @@ const styles = StyleSheet.create({
   chip: {
     paddingHorizontal: 14,
     paddingVertical: 9,
-    borderRadius: 8,
+    borderRadius: 10,
     backgroundColor: COLORS.surface,
     borderColor: COLORS.border,
     borderWidth: 1,
   },
   chipActive: {
     backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    borderColor: COLORS.primaryDark,
   },
   chipText: { color: COLORS.textSecondary, fontSize: 13, fontWeight: '600' },
   chipTextActive: { color: '#fff' },
@@ -410,17 +478,46 @@ const styles = StyleSheet.create({
   submitBtn: {
     backgroundColor: COLORS.primary,
     borderRadius: 14,
-    paddingVertical: 17,
+    paddingVertical: 16,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 8,
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.4)',
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS.primaryDark,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255, 255, 255, 0.2)',
+    borderRightWidth: 1,
+    borderRightColor: COLORS.primaryDark,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.6,
     shadowRadius: 10,
-    elevation: 5,
+    elevation: 6,
   },
-  submitBtnDisabled: { opacity: 0.4 },
-  submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  submitBtnDisabled: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  submitBtnPressed: {
+    backgroundColor: '#0284c7',
+    transform: [{ scale: 0.98 }, { translateY: 2 }],
+    shadowOpacity: 0.2,
+    elevation: 2,
+    borderBottomWidth: 1,
+  },
+  submitBtnText: { 
+    color: '#ffffff',
+    fontSize: 16, 
+    fontWeight: '800' 
+  },
+  submitBtnTextDisabled: { 
+    color: 'rgba(255,255,255,0.4)' 
+  },
   // Success
   successTitle: { fontSize: 22, fontWeight: '800', color: COLORS.text, marginBottom: 8 },
   successSubtitle: { fontSize: 14, color: COLORS.textMuted },

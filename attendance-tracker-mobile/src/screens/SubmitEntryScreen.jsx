@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, StatusBar, Alert, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, StatusBar, Alert, KeyboardAvoidingView, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../context/AuthContext';
@@ -9,18 +9,64 @@ import PhotoUpload from '../components/PhotoUpload';
 import PoweredBy from '../components/PoweredBy';
 
 const COLORS = {
-  bg: '#051424',
-  surface: 'rgba(255,255,255,0.07)',
-  border: 'rgba(255,255,255,0.10)',
-  text: '#f1f5f9',
+  bg: '#030b14', // Deep Navy
+  surface: 'rgba(10, 25, 47, 0.65)',
+  border: 'rgba(255,255,255,0.08)',
+  text: '#f8fafc',
   textMuted: '#64748b',
   textSecondary: '#94a3b8',
-  primary: '#2563eb',
+  primary: '#0ea5e9', // Metallic light blue
+  primaryDark: '#0369a1',
   success: '#10b981',
   warning: '#f59e0b',
   danger: '#ef4444',
-  cardBg: 'rgba(255,255,255,0.07)',
+  cardBg: 'rgba(10, 25, 47, 0.65)',
 };
+
+const PulsingDot = ({ left, top, color, delay }) => {
+  const anim = useRef(new Animated.Value(0.3)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, { toValue: 1, duration: 1500, delay: delay, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0.3, duration: 1500, useNativeDriver: true }),
+      ])
+    ).start();
+  }, [anim, delay]);
+  return (
+    <Animated.View style={{
+      position: 'absolute', left, top, width: 5, height: 5, backgroundColor: color, borderRadius: 2.5,
+      opacity: anim, transform: [{ translateX: -2.5 }, { translateY: -2.5 }, { scale: anim }],
+      shadowColor: color, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 12, elevation: 6,
+    }} />
+  );
+};
+
+const TechnicalGrid = () => (
+  <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    {[...Array(8)].map((_, i) => (
+      <View key={`v-${i}`} style={{ position: 'absolute', left: `${(i + 1) * 12.5}%`, top: 0, bottom: 0, width: 1, backgroundColor: 'rgba(59,130,246,0.03)' }} />
+    ))}
+    {[...Array(12)].map((_, i) => (
+      <View key={`h-${i}`} style={{ position: 'absolute', top: `${(i + 1) * 8.33}%`, left: 0, right: 0, height: 1, backgroundColor: 'rgba(59,130,246,0.03)' }} />
+    ))}
+    <PulsingDot left="25%" top="16.66%" color="rgba(255,255,255,1)" delay={0} />
+    <PulsingDot left="62.5%" top="25%" color="#60a5fa" delay={800} />
+    <PulsingDot left="37.5%" top="50%" color="rgba(255,255,255,1)" delay={400} />
+    <PulsingDot left="75%" top="66.64%" color="#60a5fa" delay={1200} />
+    <PulsingDot left="12.5%" top="75%" color="#60a5fa" delay={600} />
+    <PulsingDot left="50%" top="83.33%" color="rgba(255,255,255,1)" delay={1000} />
+    <PulsingDot left="87.5%" top="41.65%" color="#60a5fa" delay={1500} />
+    <PulsingDot left="12.5%" top="8.33%" color="#60a5fa" delay={300} />
+    <PulsingDot left="87.5%" top="8.33%" color="#60a5fa" delay={1100} />
+    <PulsingDot left="50%" top="33.32%" color="#60a5fa" delay={700} />
+    <PulsingDot left="25%" top="58.31%" color="#60a5fa" delay={1300} />
+    <PulsingDot left="87.5%" top="91.63%" color="rgba(255,255,255,1)" delay={900} />
+    <PulsingDot left="12.5%" top="41.65%" color="#60a5fa" delay={500} />
+    <PulsingDot left="62.5%" top="75%" color="#60a5fa" delay={1400} />
+    <PulsingDot left="37.5%" top="16.66%" color="#60a5fa" delay={200} />
+  </View>
+);
 
 const HoursPicker = ({ value, onChange }) => {
   const chips = [4, 5, 6, 7, 8, 9, 10];
@@ -110,6 +156,7 @@ export default function SubmitEntryScreen({ navigation }) {
 
   const [focusInput, setFocusInput] = useState(null);
   const [existingDates, setExistingDates] = useState(new Set());
+  const [existingEntries, setExistingEntries] = useState([]);
 
   const minDateObj = new Date();
   minDateObj.setDate(minDateObj.getDate() - 30);
@@ -119,6 +166,7 @@ export default function SubmitEntryScreen({ navigation }) {
     Api.getMyEntries(state.employeeId, currentMonthKey)
       .then(res => {
         const entries = Array.isArray(res?.entries) ? res.entries : [];
+        setExistingEntries(entries);
         const dates = new Set(entries.map(e => e.DateKey || e.WorkDate || '').filter(Boolean));
         setExistingDates(dates);
       })
@@ -126,6 +174,8 @@ export default function SubmitEntryScreen({ navigation }) {
   }, [state.employeeId]);
 
   const isDuplicate = existingDates.has(workDate);
+  const duplicateEntry = isDuplicate ? existingEntries.find(e => e.DateKey === workDate || e.WorkDate === workDate) : null;
+  const duplicateEntryId = duplicateEntry ? (duplicateEntry.ID || duplicateEntry.id || duplicateEntry.Id || duplicateEntry.itemId) : null;
 
   const handleSubmit = async () => {
     if (isLoading) return;
@@ -144,6 +194,13 @@ export default function SubmitEntryScreen({ navigation }) {
       };
       
       const res = await Api.submitEntry(payload);
+      
+      if (res && res.success === false) {
+        setError(res.message || 'Failed to submit entry.');
+        setIsLoading(false);
+        return;
+      }
+
       const newEntryId = res.entryId || res.id || res.ID || res.itemId || res.Id;
       
       if (!newEntryId) {
@@ -171,8 +228,10 @@ export default function SubmitEntryScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : insets.top + 16 }]}>
+    <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+      <TechnicalGrid />
+      <SafeAreaView style={styles.safeArea}>
+        <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : insets.top + 16 }]}>
         <View style={styles.headerLeft}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Text style={styles.backButtonText}>← Back</Text>
@@ -256,10 +315,25 @@ export default function SubmitEntryScreen({ navigation }) {
               {isDuplicate && (
                 <View style={styles.warningBanner}>
                   <Text style={styles.warningIcon}>⚠️</Text>
-                  <View>
+                  <View style={{ flex: 1 }}>
                     <Text style={styles.warningTitle}>Entry already submitted</Text>
                     <Text style={styles.warningText}>You already have an attendance entry for this date.</Text>
                   </View>
+                </View>
+              )}
+
+              {isDuplicate && duplicateEntryId && (
+                <View style={{ marginTop: 8, marginBottom: 20 }}>
+                  <Text style={[styles.label, { color: COLORS.primary, marginBottom: 12 }]}>ADD PHOTOS TO EXISTING ENTRY:</Text>
+                  <PhotoUpload
+                    entryId={duplicateEntryId}
+                    employeeId={state.employeeId}
+                    dateKey={workDate}
+                    onUploadDone={() => {
+                      Alert.alert("Success", "Photos added to your existing entry!");
+                      navigation.navigate('WorkerDashboard');
+                    }}
+                  />
                 </View>
               )}
 
@@ -273,8 +347,10 @@ export default function SubmitEntryScreen({ navigation }) {
                 style={[styles.submitButton, (isLoading || isDuplicate) && styles.submitButtonDisabled]}
                 onPress={handleSubmit}
                 disabled={isLoading || isDuplicate}
+                activeOpacity={0.8}
               >
-                <Text style={[styles.submitButtonText, isDuplicate && { color: COLORS.textMuted }]}>
+                <View style={styles.btnHighlight} />
+                <Text style={[styles.submitButtonText, isDuplicate && { color: 'rgba(255,255,255,0.5)' }]}>
                   {isLoading ? 'Submitting...' : isDuplicate ? 'Already Submitted Today' : 'Submit Attendance'}
                 </Text>
               </TouchableOpacity>
@@ -285,21 +361,23 @@ export default function SubmitEntryScreen({ navigation }) {
           <PoweredBy />
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: COLORS.bg },
+  safeArea: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingVertical: 20,
-    backgroundColor: 'rgba(5, 20, 36, 0.85)',
+    backgroundColor: 'rgba(3, 11, 20, 0.85)',
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
+    zIndex: 10,
   },
   headerLeft: {
     flex: 1,
@@ -350,10 +428,10 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 16,
     paddingVertical: 13,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: COLORS.surface,
     borderColor: COLORS.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 14,
     marginBottom: 16,
     justifyContent: 'center',
     height: 50,
@@ -362,10 +440,10 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 16,
     paddingVertical: 13,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: COLORS.surface,
     borderColor: COLORS.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 14,
     color: COLORS.text,
     fontSize: 15,
     marginBottom: 16,
@@ -398,29 +476,51 @@ const styles = StyleSheet.create({
   errorText: { color: COLORS.danger, fontSize: 13, textAlign: 'center' },
   submitButton: {
     width: '100%',
-    padding: 15,
-    backgroundColor: COLORS.primary,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  submitButtonDisabled: { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1 },
-  submitButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  hoursPickerContainer: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderColor: 'rgba(255,255,255,0.10)',
-    borderWidth: 1,
-    borderRadius: 14,
     padding: 16,
-    marginBottom: 16,
+    backgroundColor: COLORS.primary,
+    borderRadius: 14,
+    alignItems: 'center',
+    marginTop: 8,
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS.primaryDark,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 8,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  btnHighlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '45%',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  submitButtonDisabled: { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1, shadowOpacity: 0, borderBottomWidth: 1 },
+  submitButtonText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  hoursPickerContainer: {
+    backgroundColor: COLORS.surface,
+    borderColor: COLORS.border,
+    borderWidth: 1,
+    borderRadius: 22,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   hoursHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   hoursLabel: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase' },
   hoursValueText: { fontSize: 20, fontWeight: '800', color: COLORS.primary },
   chipsScroll: { marginBottom: 16, flexDirection: 'row' },
   chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8, borderWidth: 1 },
-  chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
-  chipInactive: { backgroundColor: 'rgba(255,255,255,0.07)', borderColor: 'rgba(255,255,255,0.12)' },
+  chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primaryDark },
+  chipInactive: { backgroundColor: 'rgba(255,255,255,0.05)', borderColor: COLORS.border },
   chipText: { fontSize: 14, fontWeight: '600' },
   chipTextActive: { color: 'white' },
   chipTextInactive: { color: '#94a3b8' },

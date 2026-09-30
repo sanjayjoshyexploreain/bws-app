@@ -2,20 +2,20 @@
 
 :root {
   /* Backgrounds */
-  --bg-primary: #051424;
-  --bg-secondary: #0d1c2d;
-  --bg-surface: rgba(255, 255, 255, 0.06);
-  --bg-surface-hover: rgba(255, 255, 255, 0.10);
-  --bg-card: rgba(255, 255, 255, 0.07);
+  --bg-primary: #030b14;
+  --bg-secondary: #0a192f;
+  --bg-surface: rgba(10, 25, 47, 0.65);
+  --bg-surface-hover: rgba(10, 25, 47, 0.85);
+  --bg-card: rgba(10, 25, 47, 0.65);
 
   /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.10);
-  --border-active: rgba(255, 255, 255, 0.25);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: #0ea5e9;
 
   /* Brand */
-  --color-primary: #2563eb;
-  --color-primary-glow: rgba(37, 99, 235, 0.35);
-  --color-primary-dark: #1d4ed8;
+  --color-primary: #0ea5e9;
+  --color-primary-glow: rgba(14, 165, 233, 0.35);
+  --color-primary-dark: #0369a1;
 
   /* Status */
   --color-success: #10b981;
@@ -26,7 +26,7 @@
   --color-danger-bg: rgba(239, 68, 68, 0.15);
 
   /* Typography */
-  --color-text: #f1f5f9;
+  --color-text: #f8fafc;
   --color-text-muted: #64748b;
   --color-text-secondary: #94a3b8;
 
@@ -37,9 +37,9 @@
   --radius-xl: 28px;
 
   /* Shadows */
-  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.2);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --shadow-button: 0 4px 15px rgba(37, 99, 235, 0.4);
+  --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.2);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-button: 0 6px 12px rgba(14, 165, 233, 0.4);
 }
 
 * {
@@ -48,7 +48,12 @@
 
 body {
   margin: 0;
-  background: radial-gradient(ellipse at top, #0d1c2d 0%, #051424 100%);
+  background-color: var(--bg-primary);
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center top;
   background-attachment: fixed;
   min-height: 100vh;
   color: var(--color-text);
