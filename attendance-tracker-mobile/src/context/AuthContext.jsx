@@ -99,7 +99,8 @@ export function AuthProvider({ children }) {
 
       await saveState({
         isAuthenticated: true,
-        role: isManagerOrAdmin ? 'Admin' : 'Worker',
+        token: res.token,
+        role: res.role || (isManagerOrAdmin ? 'Admin' : 'Worker'),
         employeeId: res.employeeId || '',
         employeeName: res.employeeName || '',
         employeeSpId: res.spId || null,
