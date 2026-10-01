@@ -1,0 +1,8 @@
+{
+  "name": "bws/php-middleware",
+  "description": "PHP 8.x API Gateway for BWS App",
+  "require": {
+    "php": ">=8.0",
+    "firebase/php-jwt": "^7.2"
+  }
+}
