@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, StatusBar, Image, Pressable, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, StatusBar, Image, Pressable, Animated, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -94,9 +94,9 @@ const InfoRow = ({ icon, label, value }) => {
 };
 
 export default function WorkerDashboard({ navigation }) {
-  const { state, logout } = useAuth();
+  const { state } = useAuth();
   const insets = useSafeAreaInsets();
-  
+
   const submitScale = useRef(new Animated.Value(1)).current;
   const requestScale = useRef(new Animated.Value(1)).current;
 
@@ -139,8 +139,8 @@ export default function WorkerDashboard({ navigation }) {
                 style={styles.logo}
               />
             </View>
-            <TouchableOpacity onPress={logout} style={styles.logoutBtn} activeOpacity={0.7}>
-              <Text style={styles.logoutText}>Logout</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.settingsIconBtn} activeOpacity={0.7}>
+              <Text style={styles.settingsIconText}>⚙️</Text>
             </TouchableOpacity>
           </View>
 
@@ -237,7 +237,6 @@ export default function WorkerDashboard({ navigation }) {
                 </View>
               </Pressable>
             </Animated.View>
-            
           </View>
 
           {/* FOOTER */}
@@ -275,21 +274,21 @@ const styles = StyleSheet.create({
     height: 180,
     resizeMode: 'contain',
     marginLeft: -24,
-    marginRight: -100, // Prevents pushing the logout button out of the screen
+    marginRight: -80, // Adjusted to make room for just the settings button
   },
-  logoutBtn: {
-    backgroundColor: COLORS.dangerBg,
-    borderColor: COLORS.dangerBorder,
+  settingsIconBtn: {
+    backgroundColor: COLORS.surface,
+    borderColor: COLORS.border,
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    zIndex: 20, // Ensures it stays clickable above the logo's transparent padding
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 20,
   },
-  logoutText: {
-    color: COLORS.danger,
-    fontSize: 13,
-    fontWeight: '700',
+  settingsIconText: {
+    fontSize: 16,
   },
 
   // Welcome

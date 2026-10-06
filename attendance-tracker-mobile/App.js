@@ -14,6 +14,7 @@ import EntryDetailScreen from './src/screens/EntryDetailScreen';
 import AdminEntryDetail from './src/screens/AdminEntryDetail';
 import AdminReportScreen from './src/screens/AdminReportScreen';
 import WorkwearRequestScreen from './src/screens/WorkwearRequestScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,7 @@ function RootNavigator() {
           <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
           <Stack.Screen name="AdminEntryDetail" component={AdminEntryDetail} />
           <Stack.Screen name="AdminReport" component={AdminReportScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
         </>
       ) : (
         <>
@@ -36,6 +38,7 @@ function RootNavigator() {
           <Stack.Screen name="SubmitEntry" component={SubmitEntryScreen} />
           <Stack.Screen name="EntryDetail" component={EntryDetailScreen} />
           <Stack.Screen name="WorkwearRequest" component={WorkwearRequestScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
         </>
       )}
     </Stack.Navigator>

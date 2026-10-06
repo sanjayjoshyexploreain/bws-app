@@ -11,6 +11,7 @@ import AdminEntryDetail from './screens/AdminEntryDetail';
 import AdminReportScreen from './screens/AdminReportScreen';
 import WorkwearRequestScreen from './screens/WorkwearRequestScreen';
 import StandalonePhotoUpload from './screens/StandalonePhotoUpload';
+import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 
 const AdminAccessGate = () => {
   const navigate = useNavigate();
@@ -88,6 +89,8 @@ export default function App() {
             <AdminReportScreen />
           </ProtectedRoute>
         } />
+        
+        <Route path="/privacy-policy" element={<PrivacyPolicyScreen />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
