@@ -237,28 +237,43 @@ export default function LoginScreen() {
                   {isLoading ? 'Verifying...' : 'Login with OTP'}
                 </button>
 
+                  <button
+                    onClick={() => {
+                      setOtpSent(false);
+                      setOtpValue('');
+                      setLocalError('');
+                    }}
+                    style={{
+                      width: '100%',
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--color-text-muted)',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      padding: '8px'
+                    }}
+                  >
+                    Resend OTP
+                  </button>
+                </div>
+              )}
+
+              <div style={{ textAlign: 'center', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
                 <button
+                  type="button"
                   onClick={() => {
-                    setOtpSent(false);
-                    setOtpValue('');
-                    setLocalError('');
+                    sessionStorage.removeItem('adminAccessGranted');
+                    setAdminAccessVisible(false);
                   }}
                   style={{
-                    width: '100%',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--color-text-muted)',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    padding: '8px'
+                    background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline'
                   }}
                 >
-                  Resend OTP
+                  Return to Employee Login
                 </button>
               </div>
-            )}
-          </div>
+            </div>
         ) : (
           <form onSubmit={handleWorkerSubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <div>

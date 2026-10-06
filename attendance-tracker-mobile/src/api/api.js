@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Point this to your new backend proxy server URL.
 // For local testing on a physical device via Expo Go, use your computer's local IP
 // For production, change to your hosted backend URL (e.g., 'https://api.yourdomain.com/api')
-const BASE_URL = 'http://192.168.0.111:3000/api';
+const BASE_URL = 'https://bwsgroup.pl/api';
 
 async function callApi(endpoint, body) {
   let token = null;
